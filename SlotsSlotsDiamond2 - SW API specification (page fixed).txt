@@ -1,0 +1,6183 @@
+SlotsSlotsDiamond2 - SW API specification
+
+
+
+SlotsDiamond2 - SW API specification
+
+
+
+
+Strictly Confidential - for intended purposes and recipients only!
+
+
+
+Latest update: May, 2025 API version 1.0
+
+
+
+
+© 2025 SLOTSDIAMOND2
+Table of Contents
+Table of Contents	1
+Version Control	3
+Disclaimer	4
+    1. API Overview	5
+        1.1 Seamless Wallet API	5
+        1.2 Data Integration API	6
+    2. Seamless Wallet API Services	7
+HTTP Method Used	7
+Request Headers	7
+Response Headers	7
+Security Measures	8
+        2.1. Authenticate	10
+Request	10
+Response	11
+Response Codes	12
+        2.2. Balance	12
+Request	13
+Response	13
+Response Codes	15
+        2.3. Bulk Bet	15
+Request	15
+Response	17
+Response Codes	19
+        2.4. Bulk Win	20
+Request	20
+Response	22
+Response Codes	24
+        2.5. Bulk Refund	24
+Request	25
+Response	25
+Response Codes	27
+        2.6. Settlement	28
+Request	28
+Response	29
+Response Codes	31
+Error Codes for Seamless Wallet API	32
+    3. Data Integration API Services	33
+HTTP Method Used	33
+Request Headers	33
+Response Headers	34
+Security Measures	34
+        3.1. Get Providers List API	35
+Request	36
+Response	36
+Response Codes	39
+        3.2. Get Category List API	39
+Request	40
+Response	40
+Response Codes	42
+        3.3. GameList API	43
+Request	43
+Response	44
+Response Codes	46
+        3.4. Most popular games API	47
+Request	47
+Response	48
+Response Codes	50
+        3.5. Get upcoming games API	51
+Request	51
+Response	52
+Response Codes	54
+        3.6. Game launch API	55
+Request	55
+Response	57
+Response Codes	59
+        3.7. Round details API	59
+Request	60
+Response	61
+Response Codes	63
+        3.8. Bet history API	63
+Request	64
+Response	65
+Response Codes	68
+        3.9. Get Credit Limit API	69
+Request	69
+Response	70
+Response Codes	71
+Error Codes for Data Integration API	72
+Version Control
+
+Date
+Author
+Version
+Change Description
+9th May 2025
+Red Apple Technologies
+1.0
+Creating API Document
+Disclaimer
+    1. API Overview
+The SlotsDiamond2 SW API is a unified backend solution that enables gaming platforms to seamlessly interact with multiple game providers through a single integration. It is divided into two key components: one focused on secure, real-time wallet transactions, and another dedicated to dynamic game data and content delivery, which refers to Seamless Wallet API and Data Integration API. Together, they provide a consistent and scalable interface for managing gameplay operations, financial transactions, and content synchronization across diverse provider systems.
+
+By abstracting provider-specific logic, the SlotsDiamond2 SW API simplifies integration and ensures a standardized experience regardless of the underlying game source. It supports a wide range of real-time operations, including player session handling, wallet synchronization, and retrieval of game metadata and configurations-all without requiring direct communication with each individual provider.
+
+Security is a core part of the platform, with protections such as hash-based request validation and IP whitelisting to ensure integrity and prevent unauthorized access. The API adheres to RESTful design principles, delivering stateless, JSON-based communication and clear HTTP status handling. Built for performance and reliability, the SlotsDiamond2 SW API empowers gaming platforms to scale efficiently while maintaining full control over financial flows and game content delivery.
+
+        1.1 Seamless Wallet API
+The Seamless Wallet API Service is a centralized API solution that manages all critical wallet transactions required during gameplay, including user authentication, balance verification, bet placement, win processing, refunds, bulk operations, and session settlement. It is designed to provide a smooth, secure, and real-time transactional experience, enabling consistent wallet behavior across various games and providers.
+
+API Name
+Description
+Status
+Authenticate
+Verifies the identity of the user and authorizes access to wallet operations.
+
+Balance
+Retrieves the current balance available in the user's wallet.
+
+BulkBet
+Processes multiple bet transactions in a single request for efficiency.
+
+BulkWin
+Processes multiple winnings transactions in a single request for efficiency.
+
+BulkRefund
+Handles multiple refund operations together to simplify batch rollbacks.
+
+
+Settlement
+Finalizes all pending transactions and reconciles the session’s financials.
+
+
+        1.2 Data Integration API
+The Data Integration API provides real-time access to dynamic game-related data, including game categories, provider information, game listings, popular and upcoming titles, player bet history, round details, credit limits, and available bet ranges. It enables platforms to keep their game catalogs updated, personalize user experiences, and maintain seamless synchronization with provider content.
+
+API Name
+Description
+Status
+GetCategories
+Retrieves a list of game categories available on the platform.
+
+GetProviders
+Returns information about all integrated game providers.
+
+GetGameList
+Fetches the complete list of games offered by all providers.
+
+MostPopularGames
+Provides a list of the most played or trending games.
+
+GetUpcomingGames
+Returns games scheduled for future release or availability.
+
+GetRoundDetails
+Retrieves detailed information about a specific game round.
+
+BetHistory
+Provides a history of bets placed by a user across games.
+
+GetGameURL
+Generates a playable URL for launching a specific game session.
+
+GetCreditLimit
+Returns the credit limit assigned to a user, if applicable.
+
+
+
+
+
+—————————————————The Overview will continue—————————————————
+    2. Seamless Wallet API Services
+The Seamless Wallet API supports a full range of real-time wallet operations essential for gaming platforms, including secure player authentication, balance verification, bet deductions, win payouts, refunds, and session settlements. It also enables efficient handling of high-volume transactions through bulk operations, allowing multiple bets, wins, or refunds to be processed in a single request. This ensures consistent wallet behavior across games and providers while optimizing performance under load.
+
+Security is enforced through MD5-based request hashing, combined with IP whitelisting to restrict access to trusted sources. This approach safeguards data integrity and prevents unauthorized access, ensuring all wallet transactions are securely validated.
+
+Designed around RESTful principles, the Seamless Wallet API uses stateless communication, clean JSON responses, and standardized HTTP status codes to simplify integration and ensure consistency. Whether supporting single-game transactions or complex multi-provider ecosystems, it delivers the control, security, and scalability required for modern real-money gaming platforms.
+
+HTTP Method Used
+    • POST: Used for user authentication, retrieving balance, processing bets and wins, issuing refunds, handling bulk transactions (bet, win, refund), and finalizing game settlements.
+
+Request Headers
+Most APIs in this service require the following headers:
+
+http
+
+Content-Type: application/json
+
+    • Content-Type: Specifies that the request body is in JSON format.
+
+Response Headers
+All responses will include:
+
+http
+Content-Type: application/json
+    • Content-Type: Ensures the response format remains consistent.
+Security Measures
+    • MD5-based Hashing: Ensures secure access to protected endpoints.
+    • SECRET_KEY: Merchant will provide the value of secret key at the time of Onboarding.
+
+Hash code is calculated with following formula:
+From request post parameters, all parameters are taken (except hash) and appending to string:
+
+    1. Sort all parameters by keys in alphabetical order.
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+    4. Calculate the hash by using MD5.
+    5. Compare with hash parameter. In the case of failure, Operator should send the error code 1013.
+Example:
+
+    1. Sort all expected parameters by keys in alphabetical order.
+
+ini
+bet_amount=199 category_id=66b5be786a68c2e9bbb5296e game_id=66b5f86fe5c3936dcce51073 round_id=157887124 txn_id=1001578870000007943180
+user_id=f7ed416e
+
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+
+ini
+bet_amount=199&category_id=66b5be786a68c2e9bbb5296e&game_id=66b5f86fe5c3936dcce51073 &round_id=157887124&txn_id=1001578870000007943180&user_id=f7ed416e
+
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+
+ini
+bet_amount=199&category_id=66b5be786a68c2e9bbb5296e&game_id=66b5f86fe5c3936dcce51073 &round_id=157887124&txn_id=1001578870000007943180&user_id=f7ed416eSECRET_KEY
+
+    4. Calculate MD5 hash of the entire string.
+
+ini
+MD5(bet_amount=199&category_id=66b5be786a68c2e9bbb5296e&game_id=66b5f86fe5c3936dcce5 1073&round_id=157887124&txn_id=1001578870000007943180&user_id=f7ed416eSECRET_KEY)
+
+You'll get a 32-character hash (e.g. 0aa56fb3e00894da9e3bbff34d9e14c3). Now, the hash has been generated and added to the request body. The example request body is as followed:
+
+json
+{
+"user_id": "f7ed416e",
+"game_id": "66b5f86fe5c3936dcce51073", "category_id": "66b5be786a68c2e9bbb5296e", "round_id": "157887124",
+"txn_id": "1001578870000007943180",
+"bet_amount": "199",
+"hash": "0aa56fb3e00894da9e3bbff34d9e14c3"
+}
+
+    5. Validate the request by comparing the received hash with the generated hash.
+
+
+NOTE: The {{operator_endpoint}} is the primary interface through which merchant initiate real-time wallet operations with operators. Operators must provide this endpoint during onboarding to enable smooth integration and ensure consistent, low-latency processing of transactions across gaming sessions.
+
+        2.1. Authenticate
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=authenticate
+Description:
+The Authenticate API is used to verify a player's identity before granting access to the gaming platform. The request includes the player's unique identifier and a verification hash generated by the merchant. Upon receiving the request, the operator is expected to validate the provided information and return an appropriate response. This serves as the initial step in establishing a secure and authenticated gaming session.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+user_id
+string
+Unique identifier of the player.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+Example Request:
+
+json
+{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}
+
+Response
+Returns the player's current wallet balance, currency, country and jurisdiction.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+amount
+Float
+user's real balance
+Yes
+country
+String
+Country of the player. 2-letter Country code, ISO 3166-1 alpha-2.
+Optional
+jurisdiction
+String
+Jurisdiction of the player.
+Optional
+Example Response:
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"currency": "KRW", "amount": 1045784.47, "country": "UK", "jurisdiction": "GB"
+}
+}
+Example Response (Failure - Invalid User):
+
+json
+{
+"code": 2001,
+"message": "INVALID_USER",
+
+
+
+
+
+
+
+
+bash
+curl --location '{{operator_endpoint}}/callback?function=authenticate' \
+--header 'Content-Type: application/json' \
+--data '{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}'
+
+
+
+
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+
+
+        2.2. Balance
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=balance
+Description:
+The Balance API is used to retrieve the current wallet balance of a player. The request includes the player’s unique identifier and a verification hash generated by the merchant. Upon receiving the request, the operator should respond with the available balance and currency information for the specified player.
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+user_id
+string
+Unique identifier of the player.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+Example Request:
+
+json
+{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}
+
+
+Response
+Returns the player's current wallet balance and associated currency.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+amount
+Float
+user's real balance
+Yes
+Example Response:
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"currency": "KRW", "amount": 1045784.47
+}
+}
+Example Response (Failure - Invalid User):
+
+json
+{
+"code": 2001,
+"message": "INVALID_USER", "data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{operator_endpoint}}/callback?function=balance' \
+-H "Content-Type: application/json" \
+-d '{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}'
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+
+
+        2.3. Bulk Bet
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=bulkbet
+
+
+Description:
+The Bulk Bet API is used by the merchant to place multiple bets in a single request. The request includes player and game identifiers, a total bet amount, and an array of individual transactions-each containing a unique txn_id, bet_amount, and round_id.
+All transactions are processed as a single atomic operation. If any individual bet fails validation (e.g. due to an invalid amount, round ID, or duplicate transaction), the entire bulk bet must be rejected. In such cases, the player's balance must remain unchanged, and the operator should return a failure response.
+Each txn_id must be globally unique. Before deducting the player’s quota, the operator must ensure that none of the transaction IDs in the request have been previously processed to prevent duplicate deductions.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+
+user_id
+String
+Unique identifier of the player.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the game provider
+Yes
+provider_name
+Object
+Provider name in different languages
+Yes
+total_amount
+Float
+Amount being wagered by the player.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+transactions
+Json array
+See Below
+Yes
+amount
+Float
+Amount for the individual bet.
+Yes
+txn_id
+String
+Unique transaction ID for this specific bet.
+Yes
+round_id
+String
+Identifier for the game round.
+Yes
+Example Request:
+
+json
+
+{
+"request_id":"184",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar",
+
+
+
+
+
+Response
+Returns the updated player balance, currency, and a list of processed transactions. Each entry in the transactions array includes the original txn_id from the request and a corresponding operator_transaction_id generated by the operator for reference and tracking.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+transactions
+Json array
+See Below
+Yes
+operator_transaction_id
+String
+Operator generated transaction ID for reference.
+
+txn_id
+String
+txn_id from the request
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"available_balance": 293271.222, "currency": "KRW", "transactions": [
+{
+"operator_transaction_id": "6887370e582d2eb37a3a3422", "txn_id": "676a86cb41762fc4a8a42a52"
+}
+]
+}
+}
+Example Response (Failure - Insufficient Balance):
+
+json
+{
+"code": 2002,
+"message": "BALANCE_EXCEED",
+"data": { }
+}
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": { }
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=bulkbet" \
+-H "Content-Type: application/json" \
+-d '{
+"request_id":"184",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7",
+
+
+
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2002
+BALANCE_EXCEED
+2003
+ALREADY_PROCESSED
+
+2004
+INVALID_TRANSACTION
+
+
+
+
+        2.4. Bulk Win
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=bulkwin
+
+
+Description:
+The Bulk win API used to credit multiple winnings for a player in a single request. The request includes the player's details, the total win amount, and a list of individual transactions.
+The txn_id must be unique for each transaction, ensuring that no transaction is processed more than once. However, the round_id can be the same across multiple transactions, as they may correspond to different bet instances in the same game round.
+The operator is responsible for validating that none of the provided txn_ids have been processed before. If any transaction in the request fails (due to a duplicate txn_id, invalid data, or any other issue), the entire request should fail, and no winnings should be credited. The operator should only credit the net win amount if all transactions are successfully validated.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+user_id
+String
+Unique identifier of the player.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the game provider
+Yes
+provider_name
+Object
+Provider name in different languages
+Yes
+total_amount
+Float
+Total win amount to be credited for all transactions in the batch.
+Yes
+overwin_amount
+Float
+Amount that exceeded the profit set by operator.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+transactions
+Json array
+See Below
+Yes
+amount
+Float
+Win Amount for the individual transaction.
+Yes
+txn_id
+String
+Unique transaction ID for this specific win.
+Yes
+round_id
+String
+Identifier for the game round in which the win occurred. Multiple transactions can share the same round_id.
+Yes
+
+
+
+
+
+Example Request:
+
+json
+
+{
+"request_id":"185",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c",
+
+
+
+
+
+
+Response
+
+© 2025 SLOTSDIAMOND2
+23
+Returns the updated player balance, currency, and a list of processed transactions. Each entry in the transactions array includes the original txn_id from the request and a corresponding operator_transaction_id generated by the operator for reference and tracking.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+transactions
+Json array
+See Below
+Yes
+operator_transaction_id
+String
+Operator generated transaction ID for reference.
+
+txn_id
+String
+txn_id from the request
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"available_balance": 1045884.47, "currency": "KRW", "transactions": [
+{
+"operator_transaction_id":"681ddf2e2ab0d881eb661b49", "txn_id": "16053053900005407381781"
+},
+{
+"operator_transaction_id":"921def2e27b0d881e3661b4w", "txn_id": "14053053900005407381791"
+
+}
+]
+}
+}
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": { }
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=bulkwin" \
+-H "Content-Type: application/json" \
+-d '{
+"request_id":"185",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7", "category_name":{
+"en": "Lobby",
+"ja": "ロビー",
+"kor": "로비",
+
+
+
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2003
+ALREADY_PROCESSED
+2004
+INVALID_TRANSACTION
+        2.5. Bulk Refund
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=bulkrefund
+Description:
+The Bulk Refund API is used to request refunds for multiple previously placed bets in a single operation. The request contains the player's unique identifier, a verification hash, and an array of txn_ids that represent the transactions to be refunded.
+The operator must validate that each transaction ID corresponds to a valid and refundable bet. All refunds in the request are processed as a single atomic operation-if any one of the transactions is invalid or not eligible for a refund, the entire request must be rejected, and no changes should be made to the player’s balance. The operator should also ensure that none of the txn_ids have already been refunded.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+user_id
+String
+Unique identifier of the player.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the game provider
+Yes
+
+provider_name
+Object
+Provider name in different languages
+Yes
+hash
+String
+Verification hash generated by the merchant to validate the request payload.
+Yes
+transactions
+Array
+Array of transaction IDs to be refunded.
+Yes
+Example Request:
+
+json
+
+{
+"request_id":"186",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7", "category_name":{
+"en": "Lobby",
+"ja": "ロビー",
+"kor": "로비",
+"thai": "ล็อบบี้",
+"vi": "Sảnh đợi"
+},
+"provider_id":"67c98371bc9aae6e527ba835", "provider_name":{
+"en": "WM Casino",
+"ja": "WM Casino",
+"kor": "WM카지노",
+"thai": "WM Casino",
+"vi": "WM Casino"
+}
+},
+
+
+
+
+Response
+Returns the updated player balance and a list of successfully refunded transactions, each with the original txn_id and a unique operator_transaction_id for reference.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+transactions
+Json array
+See Below
+Yes
+operator_transaction_id
+String
+Operator generated transaction ID for reference.
+
+txn_id
+String
+txn_id from the request
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+
+
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": { }
+}
+Example Response (Failure - Invalid Transaction Id):
+
+json
+{
+"code": 2004,
+"message": "INVALID_TRANSACTION",
+"data": { }
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=bulkrefund" \
+-H "Content-Type: application/json" \
+
+-d '{
+"request_id":"186",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7", "category_name":{
+"en": "Lobby",
+"ja": "ロビー",
+"kor": "로비",
+"thai": "ล็อบบี้",
+"vi": "Sảnh đợi"
+},
+"provider_id":"67c98371bc9aae6e527ba835", "provider_name":{
+"en": "WM Casino",
+"ja": "WM Casino",
+"kor": "WM카지노",
+"thai": "WM Casino",
+"vi": "WM Casino"
+}
+},
+"hash":"ffba0057d4977f6d8b985951fbabd6dd", "transactions": [
+"676a86cb41762fc4a8a42a51"
+]
+}'
+
+
+
+
+
+
+© 2025 SLOTSDIAMOND2
+31
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2003
+ALREADY_PROCESSED
+2004
+INVALID_TRANSACTION
+
+
+        2.6. Settlement
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=settlement
+
+
+Description:
+The Settlement API is used to credit or debit a specific amount to/from a player’s wallet outside the regular betting flow. This may include operations such as rewards, bonuses, manual adjustments, or other provider-specific settlements.
+Each settlement request includes a unique txn_id, the amount to be adjusted, the txn_type (indicating the nature of the transaction debit/credit), and the provider_id responsible for the adjustment. The operator is expected to process the settlement, apply the amount accordingly, and return the updated balance along with a transaction reference.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+
+user_id
+String
+Unique identifier of the player.
+Yes
+txn_type
+String
+Type of transaction (debit/credit).
+Yes
+transactions
+Json array
+See below
+yes
+txn_id
+String
+Unique transaction ID for this settlement operation.
+Yes
+amount
+Float
+Amount to be settled.
+Yes
+round_id
+String
+Unique identifier for the specific game round whose details are being requested.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the provider initiating the settlement.
+Yes
+provider_name
+Object
+Provider name in different languages
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+Example Request:
+
+json
+
+{
+"request_id":"188",
+"user_id": "0412f631", "txn_type": "credit", "transactions": [
+
+
+
+
+
+
+
+Response
+© 2025 SLOTSDIAMOND2
+34
+Returns the player's updated balance, the currency used, and the operator-generated transaction ID for reference.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+operator_transac tion_id
+Json Array
+See below
+Yes
+operator_transac tion_id
+String
+Operator generated transaction ID for reference. (If not SUCCESS empty string )
+Yes
+txn_id
+String
+Unique transaction identifier
+Yes
+Example Response (Success):
+
+json
+
+{
+"code": 1000,
+"message": "SUCCESS", "data": {
+"available_balance": 359271.222, "currency": "KRW",
+"transactions": [
+{
+"operator_transaction_id": "6887373f582d2eb37a3a342a", "txn_id": "676a86cb41762fc4a8a42a51"
+}
+]
+}
+}
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": {
+"available_balance": 1046284.47, "currency": "KRW", "operator_transaction_id": ""
+}
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=settlement" \
+-H "Content-Type: application/json" \
+-d '{
+"request_id":"188",
+"user_id": "0412f631", "txn_type": "credit", "txn_data": [
+{
+"amount": "66000",
+"txn_id": "676a86cb41762fc4a8a42a51", "round_id": "7024283-58-107"
+}
+],
+"games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7",
+
+
+
+
+
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2003
+ALREADY_PROCESSED
+
+
+
+
+
+
+
+Error Codes for Seamless Wallet API
+This response code is to be sent by the operator:
+
+Code
+Message
+Description
+1000
+SUCCESS
+The request was processed successfully
+2001
+INVALID_USER
+The user_id sent in the request doesn’t exist.
+2002
+BALANCE_EXCEED
+The bet_amount sent in the request is greater than the user’s available balance.
+2003
+ALREADY_PROCESSED
+The txn_id sent in the request is already present.
+2004
+INVALID_TRANSACTION
+The txn_id sent in the request cannot be found.
+2005
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1004
+FATAL_ERROR
+Internal server error
+    3. Data Integration API Services
+The Data Integration API offers a comprehensive suite of real-time operations tailored to meet the evolving demands of gaming platforms. It facilitates seamless communication between systems through endpoints that deliver essential data such as provider lists, game categories, and the complete game catalog. The API also supports fetching the most popular and upcoming games, accessing user-specific bet histories, and retrieving detailed round information for transparency and compliance. A key feature includes the ability to generate secure, session-specific game launch URLs. This enables operators to offer a streamlined gameplay experience, precise user activity tracking, and reliable integration with various third-party providers-all through a unified and consistent interface.
+To maintain high levels of security, the API implements MD5-based hashing for request validation and enforces IP whitelisting to ensure that only trusted sources can access its endpoints. This dual-layered protection guards against unauthorized access and ensures the integrity of every transaction.
+Adhering to RESTful architecture, the Data Integration API utilizes stateless communication, provides structured JSON responses, and follows standard HTTP status codes for clarity and consistency. Whether it's powering single game sessions or managing integrations across multiple providers, the API offers the reliability, security, and scalability essential for today’s gaming platforms.
+
+
+HTTP Method Used
+    • POST: Used to perform various operations such as retrieving the list of game providers, game categories, available games, upcoming games, and popular games. It is also utilized to generate a game launch URL for a specific game session. Additionally, POST requests enable fetching the bet history of a user within a specified time range, accessing detailed records of a particular game round, and retrieving the current credit balance of an account. These operations support dynamic, real-time data access essential for delivering a seamless and engaging gaming experience.
+
+Request Headers
+Most APIs in this service require the following headers:
+
+http
+
+Content-Type: application/json
+
+    • Content-Type: Specifies that the request body is in JSON format.
+Response Headers
+All responses will include:
+
+http
+Content-Type: application/json
+    • Content-Type: Ensures the response format remains consistent.
+
+Security Measures
+    • MD5-based Hashing: Ensures secure access to protected endpoints.
+    • SECRET_KEY: Merchant will provide the value of secret key at the time of Onboarding.
+
+Hash code is calculated with following formula:
+
+    1. Sort all parameters by keys in alphabetical order.
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+    4. Calculate the hash by using MD5.
+Example:
+
+    1. Sort all expected parameters by keys in alphabetical order.
+
+ini
+"account_id":"66b4a0a159098a5df1280c9a", "language":"en",
+“request_id” :”777”
+
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+
+ini
+account_id=66b4a0a159098a5df1280c9a&language=en&request_id=777
+
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+
+ini
+account_id=66b4a0a159098a5df1280c9a&language=en&request_id=777SECRET_KEY
+
+
+    4. Calculate MD5 hash of the entire string.
+
+ini
+MD5(account_id=66b4a0a159098a5df1280c9a&language=en&request_id=777SECRET_KEY)
+
+You'll get a 32-character hash (e.g. 0aa56fb3e00894da9e3bbff34d9e14c3). Now, the hash has been generated, add it to the request body. The example request body is now as followed:
+
+json
+{
+"language":"en", "account_id":"66b4a0a159098a5df1280c9a", “request_id” : “777”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}
+
+
+Note: The {{merchant_endpoint}} is the callback interface through which operators receive real-time game-related data from the merchant. This endpoint will be provided by the merchant during onboarding, facilitating seamless synchronization of game catalogs and provider content via the Data Integration API.
+
+
+        3.1. Get Providers List API
+Endpoint:
+
+bash
+
+
+
+Description:
+The get-providers API is used to get the list of providers available to the operator. It takes language, account_id and hash in the request body.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+The request_id is unique for each request
+Yes
+hash
+String
+Generated hash code.
+Yes
+The request for this API contains the following keys:
+
+Example Request:
+
+json
+{
+"language":"en", "account_id":"66b4a0a159098a5df1280c9a", “request_id” : “777”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+providers
+Json array
+See below
+Yes
+provider_id
+String
+Unique identifier for the game provider .
+Yes
+provider_name
+String
+The display name of the provider.
+Yes
+logo
+Object
+Contains URLs to the provider's logos for different theme modes. See below
+Yes
+light_logo
+String
+URL of the logo optimized for light-themed UIs.
+Yes
+dark_logo
+String
+URL of the logo optimized for dark-themed UIs
+Yes
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id” :”777”, "data": {
+"providers": [
+{
+"provider_id": "66b5cd004f0a29dbb66a3a89", "provider_name": "Pragmatic Play",
+"logo": { "light_logo":
+"https://plexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com/provider/pp/PP_white.png",
+
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “777”,
+"data": {}
+}
+
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-providers' \
+
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+        3.2. Get Category List API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-categories
+Description:
+The GetCategories API is used to get the list of all categories. The request must include a account_id , language and hash.
+
+
+Request
+The request for this API contains the following keys:
+
+
+Request Key
+Data Type
+Description
+Required
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+The request_id is unique for each request
+Yes
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"language":"en", "account_id":"xxxxxxxxxxxxxxxxxxx", “request_id” : “778”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+categories
+Json array
+See below
+Yes
+category_id
+String
+Unique identifier for the category.
+Yes
+category_name
+String
+The display name of the provider
+Yes
+category_icon
+Object
+Contains URLs to the provider's logos for different theme modes. See below
+Yes
+
+
+
+
+
+Example Response (Success)
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id”:”778”, "data": {
+"categories": [
+{
+"category_id": "66b5be786a68c2e9bbb5296e", "category_name": "Slots",
+"category_icon": "category-icon.png"
+},
+{
+"category_id": "66bafd73f9c332055b1d5be7", "category_name": "Live Casino",
+
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “778”,
+"data": {}
+}
+
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-categories' \
+--header 'Content-Type: application/json' \
+--data '{ "language":"en",
+"account_id":"xxxxxxxxxxxxxxxxxxxxxxxxxxx", “request_id” : “778”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}'
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.3. GameList API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-gamelist
+
+
+Description:
+The gameList API provides the list of games assigned to the account.
+
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+page
+String
+The page number for paginated results.
+No
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+language
+String
+"en" – English
+"kor" – Korean
+Yes
+
+
+
+"thai" – Thai "vi" – Vietnamese "ja" – Japanese
+
+request_id
+String
+The request_id is unique for each request
+Yes
+provider_id
+String
+Optional filter to fetch games only from a specific provider.
+No
+category_id
+String
+Optional filter for game category (e.g., Slots, Live Casino). Empty string ("") means no category filter applied.
+No
+search_key
+String
+Optional keyword to search games by name. Empty string means no search keyword used.
+No
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", "category_id": "",
+"language": "kor",
+"page": "0",
+"provider_id": "66b5f013e5c3936dcce50fec",
+“request_id” : “fa47a010-ec9a-494e-b3dd-dfca08b1e8c1”, "search_key": "",
+"hash": "b59825bc329c217df701348e5467d7ec"
+}
+
+
+
+
+
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+games
+Json array
+See below
+Yes
+game_id
+String
+Unique identifier for the game.
+Yes
+game_name
+String
+Name of the game.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+game_image
+String
+URL of the game's display image.
+Yes
+game_category
+String
+The category under which this game is classified.
+Yes
+game_provider
+String
+The name of the provider who offers this game.
+Yes
+release_date
+String
+Date when the game was or will be released.
+Yes
+total
+Number
+Total number of games available.
+Yes
+Response (Success)
+json
+
+{
+"code": 1000,
+"message": "SUCCESS",
+"request_id": "fa47a010-ec9a-494e-b3dd-dfca08b1e8c1", "data": {
+"games": [
+{
+"game_id": "68761076d52e881ec07d86ed", "game_name": "리틀 팜",
+"game_code": "315",
+"game_image": "https://…/315.png",
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “779”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-gamelist' \
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a", "category_id": "",
+"language": "kor",
+"page": "0",
+"provider_id": "66b5f013e5c3936dcce50fec",
+“request_id” : “fa47a010-ec9a-494e-b3dd-dfca08b1e8c1”, "search_key": "",
+"hash": "b59825bc329c217df701348e5467d7ec"
+}'
+
+
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+
+
+
+
+        3.4. Most popular games API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/most-popular-games
+
+
+Description:
+
+The /most-popular-games API retrieves the list of most popular games. Most popular games can be filtered with optional parameters i.e- provider_id, category_id, search_key
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+page
+String
+The page number for paginated results.
+No
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+provider_id
+String
+Optional filter to fetch games only from a specific provider.
+No
+category_id
+String
+Optional filter for game category (e.g., Slots, Live Casino). Empty string ("") means no category filter applied.
+No
+search_key
+String
+Optional keyword to search games by name. Empty string means no search keyword used.
+No
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+
+{
+"page":"0",
+"account_id":"66b4a0a159098a5df1280c9a",
+"hash":"0faef7a78bf77913afd83d78a53ecc7e", "language":"en",
+"provider_id":"66b5f013e5c3936dcce50fec", "category_id":"",
+
+
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+games
+Json array
+See below
+Yes
+game_id
+String
+Unique identifier for the game.
+Yes
+game_name
+String
+Name of the game.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+game_image
+String
+URL of the game's display image.
+Yes
+game_category
+String
+The category under which this game is classified.
+Yes
+game_provider
+String
+The name of the provider who offers this game.
+Yes
+release_date
+String
+Date when the game was or will be released.
+Yes
+total
+Number
+Total number of games available.
+Yes
+Response (Success)
+json
+
+{
+
+
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” :”780”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/most-popular-games' \
+--header 'Content-Type: application/json' \
+
+--data '{ "page": "0",
+"account_id": "66b4a0a159098a5df1280c9a",
+“request_id” :”fa47a010-ec9a-494e-b3dd-dfca08b1e7e1”, "language": "en",
+"provider_id": "66b5f013e5c3936dcce50fec", "category_id": "",
+"search_key": "",
+"hash": "0faef7a78bf77913afd83d78a53ecc7e"
+}'
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.5. Get upcoming games API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-upcoming-games
+Description:
+The /get-upcoming-games endpoint allows the operator to get the list of games which will be available for the player in near future.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+No
+provider_id
+String
+Unique identifier for the game provider.
+No
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", “request_id”:”fa47a010-ec9a-494e-b3dd-dfca08b1e7e8”, "language": "en",
+"provider_id": "67d13c2fefbb8bd736ebb361", "hash":"c85fe37dfad05902a88a2acfedb4d4d0"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+games
+Json array
+See below
+Yes
+game_id
+String
+Unique identifier for the game.
+Yes
+game_name
+String
+Name of the game.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+game_image
+String
+URL of the game's display image.
+Yes
+game_category
+String
+The category under which this game is classified.
+Yes
+game_provider
+String
+The name of the provider who offers this game.
+Yes
+release_date
+String
+Date when the game was or will be released.
+Yes
+
+
+Response
+
+json
+
+{
+"code": 1000,
+"message": "SUCCESS",
+"request_id": "fa47a010-ec9a-494e-b3dd-dfca08b1e7e8", "data": {
+"games": [
+{
+"game_id": "67d2bf9e8f8ac4e0c8de62f5",
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id”:’781”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-upcoming-games' \
+--header 'Content-Type: application/json' \
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1004
+CLIENT_DENIED
+Indicates the client's request was blocked due to insufficient permissions or access restrictions.
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.6. Game launch API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-game-url
+Description:
+Game launch API allows the operator to get the url to launch the game. This endpoint accepts a single game_id supplied by the merchant and returns the corresponding game launch.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+mode
+String
+Specifies the gameplay mode. "real" – Real money gameplay. "fun" – Demo or free play mode
+Yes
+user_id
+String
+Unique identifier of the player in the operator's system.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+username
+String
+The display name of the user, often shown within the game interface.
+Yes
+currency
+String
+ISO 4217 currency code to define the player's operating currency.
+Yes
+game_id
+String
+Unique identifier of the game to be launched, provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+return_url
+String
+Optional URL to which the user should be redirected after exiting the game.
+No
+hash
+String
+Generated hash code.
+Yes
+
+
+
+Headers:
+
+Header
+Type
+Description
+Required
+Content-Type
+application/json
+Request payload format
+Yes
+
+
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", "mode":"real",
+"user_id": "f7ed416e", "username":"john doe", "language":"en",
+"currency":"KRW", "Game_id":"675a80bd5badec1f966405e0", “request_id” : “782”,
+"return_url":"", "hash":"4943748121b4c8fc7d1a8d889616494d"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+url
+String
+Fully constructed game launch URL.
+Yes
+Example Response (Success):
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id”:”782”, "data": {
+"url": "https://sslaunch.plxmed.com/launch?branding=true&brand_theme=light&brand_image_light=https
+%3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storag e%2F1731570308851-1731570308747-plex_brand_light_theme_logo.png&brand_image_dark=https% 3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storage
+%2F1731503178496-1731503178170-plex_brand_dark_theme_logo.png&url=https%3A%2F%2Fblacks tone-hk1.prerelease-env.biz%2Fgs2c%2FplayGame.do%3Fkey%3Dtoken%253D675a80bd5badec1f966 405e0-ucd-66b9eec2facd20a39b5dc732%2560%257C%2560symbol%253Dvswaysbewaretd%2560%25 7C%2560language%253Den%2560%257C%2560currency%253DKRW%26ppkv%3D2%26stylename%3 Dblst_plexmediasm%26isGameUrlApiCalled%3Dtrue%26userId%3D66b9eec2facd20a39b5dc732"
+}
+}
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id”:”782”,
+"data": {}
+}
+
+
+Example Response(Error):
+
+json
+
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id”:”782”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant-endpoint}}/get-game-url' \
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a", "mode":"real",
+"user_id": "f7ed416e", "username":"john doe", "language":"en",
+"currency":"KRW", "game_id":"675a80bd5badec1f966405e0", “request_id”:”782”,
+"return_url":"", "hash":"4943748121b4c8fc7d1a8d889616494d"
+}'
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1008
+GAME_NOT_FOUND
+The requested game could not be located.
+1012
+NO_RECORD_FOUND
+Data not found.
+
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.7. Round details API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-round-details
+
+
+Description:
+The Round Details endpoint provides a URL containing the final outcome of a specified game round.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+provider_id
+String
+Unique identifier for the game provider
+Yes
+round_id
+String
+Unique identifier for the specific game round whose details are being requested.
+Yes
+player_id
+String
+Unique identifier of the player in the operator's system.
+Yes
+game_id
+String
+Unique identifier of the game to be launched, provided by the merchant.
+Yes
+
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+hash
+String
+Generated hash code.
+Yes
+
+
+
+
+
+
+
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", "provider_id": "66b5cd004f0a29dbb66a3a89", "round_id":"1234567890", "player_id":"12avca34d", "game_id":"675a80bd5badec1f966405e0", “request_id” : “783”, "hash":"1367086e43b21cf4f5f0cd857d30a4f1"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+url
+String
+The url field contains a link that displays the final result of the requested game round.
+Yes
+Example Response:
+
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id” : “783”, "data": {
+"url": "https://sslaunch.plxmed.com/round/?branding=true&brand_theme=light&brand_image_light=https
+%3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storag e%2F1731570308851-1731570308747-plex_brand_light_theme_logo.png&brand_image_dark=https% 3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storage
+%2F1731503178496-1731503178170-plex_brand_dark_theme_logo.png&provider_name=Pragmatic
+%20Play&url=%257B%2522type%2522%253A%2522url%2522%252C%2522data%2522%253A%2522ht
+tps%253A%252F%252Fblackstone-hk1.prerelease-env.biz%252Fgs2c%252FparentRoundHistoryDetails
+.do%253FplaySessionId%253D742445620000%2526stylename%253Dblst_plexmediasm%2526hash%2 53Db6d32d4c6aea38f933934ee0738f864e%2522%257D"
+}
+}
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “783”,
+"data": {}
+}
+
+
+
+cURL Request
+bash
+curl --location '{{merchant-endpoint}}/get-round-details' \
+
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a", "provider_id": "66b5cd004f0a29dbb66a3a89", "round_id":"742445620000", "player_id":"f7ed416e", "game_id":"675a80bd5badec1f966405e0", “request_id” : “783”, "hash":"1367086e43b21cf4f5f0cd857d30a4f1"
+}'
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1008
+GAME_NOT_FOUND
+The requested game could not be located.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1019
+INVALID_ROUND_ID
+The round ID is incorrect or does not exist.
+1020
+INVALID_PROVIDER
+The provided ID is incorrect, missing, or no longer valid.
+1021
+INVALID_PLAYER_ID
+The specified player could not be located or does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+        3.8. Bet history API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/bet-history
+
+
+Description:
+This API is designed to fetch the complete bet history for a specific user over a defined period. It allows operators or merchants to track and audit a user's betting activity by providing detailed records of each transaction—such as bets placed, game details, outcomes, amounts wagered or won, and timestamps—within the requested time frame.
+
+
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+player_id
+String
+Unique identifier of the player in the operator's system.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+username
+String
+The display name of the user, often shown within the game interface.
+Yes
+start_date_time
+String
+
+The beginning timestamp of the desired date range for bet history. (format: YYYY-MM-DD HH:mm:ss)
+Yes
+
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+page
+String
+
+Indicates the page number for paginated results. Useful when the history spans many records.
+No
+hash
+String
+Generated hash code.
+Yes
+
+
+
+
+
+
+
+Example Request:
+
+json
+
+{
+"request_id":"fa47a010-ec9a-494e-b3dd-dfca08b1e7c3", "account_id":"66b4a0a159098a5df1280c9a",
+"player_id": "f7ed416e",
+"start_date_time" : "2024-08-12 00:00:00",
+"end_date_time" : "2025-07-16 23:59:59",
+"hash":"cad3d235e1c4bfb8f7a1a1c44abd7dfd", "language": "en",
+"page": ""
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Numbe r
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+transactions
+Json array
+See below
+Yes
+transaction_id
+String
+A unique identifier for the transaction.
+Yes
+round_id
+String
+The unique identifier for the game round that this transaction is related to.
+Yes
+user_id
+String
+Unique identifier for the user in the merchant’s system.
+Yes
+external_user_id
+String
+The user’s identifier in the operator’s system.
+Yes
+username
+String
+The username of the player who made the transaction.
+Yes
+provider_id
+String
+The unique identifier for the game provider that hosted the game.
+Yes
+provider_name
+String
+The name of the game provider.
+Yes
+game_id
+String
+The unique identifier for the game played during the transaction.
+Yes
+game_name
+String
+The name of the game that was played.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+transaction_amo unt
+String
+
+The amount involved in the transaction (in the specified currency).
+Yes
+transaction_type
+String
+
+The type of transaction, e.g., "credit", "debit".
+Yes
+transaction_purp ose
+String
+
+The reason for the transaction, e.g., "rollback", "win", "bet".
+Yes
+
+available_balance
+String
+
+The available balance in the user’s account after the transaction.
+Yes
+game_image
+String
+
+URL to the image associated with the game, typically a logo or thumbnail.
+Yes
+category_id
+String
+
+Unique identifier for the game category, like "Slots", "Live Casino", etc.
+Yes
+category_name
+string
+
+The name of the category in which the game falls.
+Yes
+transaction_date
+_time
+string
+
+The date and time when the transaction occurred.
+Yes
+
+
+
+
+
+Example Response:
+
+json
+
+{
+"code": 1000,
+"message": "SUCCESS",
+"request_id": "fa47a010-ec9a-494e-b3dd-dfca08b1e7c3", "data": {
+"transactions": [
+{
+"transaction_id": "6877ab3409844010c4036950", "round_id": "1852bedff486beab2dbc11b8",
+"user_id": "66b9eec2facd20a39b5dc732", "external_user_id": "f7ed416e",
+"username": "akash_krw",
+"provider_id": "678f9d2c30d095ac63ec1d23", "provider_name": "NetEnt",
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “784”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant-endpoint}}/bet-history' \
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a",
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1021
+INVALID_PLAYER_ID
+The specified player could not be located or does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+
+        3.9. Get Credit Limit API
+Endpoint:
+
+bash
+
+
+
+Description:
+The endpoint is used to retrieve the current currency balance associated with a specific account.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", “request_id”:”785”, "hash":"c76788fe936b5dd71ac67721a7c1c617"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+currency
+String
+The currency code used in the account.
+Yes
+credit_limit
+String
+Representation of the available credit limit.
+Yes
+threshold
+String
+A predefined minimum balance limit.
+Yes
+limit_exceeded
+boolean
+Boolean indicating whether the credit limit threshold has been exceeded.
+Yes
+
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id”:”785”, "data": {
+"currency": "KRW",
+"credit_limit": "5,124.44",
+"threshold": "100.00", "limit_exceeded": false
+}
+}
+
+
+cURL Request
+bash
+
+
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+
+
+
+Error Codes for Data Integration API
+This response code is to be sent by the merchant:
+
+Code
+Message
+Description
+1000
+SUCCESS
+The request was processed successfully
+
+1001
+INVALID_PARAMS
+The request body consists disallowed key or value
+1002
+INVALID_ACCOUNT
+The account_id provided in request body is not valid
+1003
+MAINTENANCE_MODE_ON
+The client account is in maintenance mode
+1004
+CLIENT_DENIED
+Indicates the client's request was blocked due to insufficient permissions or access restrictions.
+1005
+ACCOUNT_DENIED
+The user is not allowed to play that game as the client account is not linked with any account of the provider or the provider account is INACTIVE.
+1006
+GAME_DENIED
+The user is not allowed to play that game as the client account is not linked with the game.
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1008
+GAME_NOT_FOUND
+The requested game could not be located.
+1009
+INVALID_CURRENCY
+The currency provided by the user is not supported by the provider
+1010
+CATEGORY_MISMATCH
+The category of the game is not supported by the associated provider account.
+1011
+UNSUPPORTED_CURRENCY
+The currency provided by the user is not supported by the client account he is associated with.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1016
+INVALID_CATEGORY
+The category_id provided is invalid.
+1017
+IP_FORBIDDEN
+caller IP not in whitelist.
+1018
+TOO_MANY_REQUESTS
+Too many incoming request.
+1019
+INVALID_ROUND_ID
+The round ID is incorrect or does not exist.
+
+1020
+INVALID_PROVIDER
+The provided ID is incorrect, missing, or no longer valid.
+1021
+INVALID_PLAYER_ID
+The specified player could not be located or does not exist.
+1022
+RESOURCE_NOT_FOUND
+The requested URL is not found on the server.
+1023
+REQUEST_ALREADY_PROCES SED
+This request was sent using the same request_id
+
+Diamond2 - SW API specification
+
+
+
+SlotsDiamond2 - SW API specification
+
+
+
+
+Strictly Confidential - for intended purposes and recipients only!
+
+
+
+Latest update: May, 2025 API version 1.0
+
+
+
+
+© 2025 SLOTSDIAMOND2
+Table of Contents
+Table of Contents	1
+Version Control	3
+Disclaimer	4
+    1. API Overview	5
+        1.1 Seamless Wallet API	5
+        1.2 Data Integration API	6
+    2. Seamless Wallet API Services	7
+HTTP Method Used	7
+Request Headers	7
+Response Headers	7
+Security Measures	8
+        2.1. Authenticate	10
+Request	10
+Response	11
+Response Codes	12
+        2.2. Balance	12
+Request	13
+Response	13
+Response Codes	15
+        2.3. Bulk Bet	15
+Request	15
+Response	17
+Response Codes	19
+        2.4. Bulk Win	20
+Request	20
+Response	22
+Response Codes	24
+        2.5. Bulk Refund	24
+Request	25
+Response	25
+Response Codes	27
+        2.6. Settlement	28
+Request	28
+Response	29
+Response Codes	31
+Error Codes for Seamless Wallet API	32
+    3. Data Integration API Services	33
+HTTP Method Used	33
+Request Headers	33
+Response Headers	34
+Security Measures	34
+        3.1. Get Providers List API	35
+Request	36
+Response	36
+Response Codes	39
+        3.2. Get Category List API	39
+Request	40
+Response	40
+Response Codes	42
+        3.3. GameList API	43
+Request	43
+Response	44
+Response Codes	46
+        3.4. Most popular games API	47
+Request	47
+Response	48
+Response Codes	50
+        3.5. Get upcoming games API	51
+Request	51
+Response	52
+Response Codes	54
+        3.6. Game launch API	55
+Request	55
+Response	57
+Response Codes	59
+        3.7. Round details API	59
+Request	60
+Response	61
+Response Codes	63
+        3.8. Bet history API	63
+Request	64
+Response	65
+Response Codes	68
+        3.9. Get Credit Limit API	69
+Request	69
+Response	70
+Response Codes	71
+Error Codes for Data Integration API	72
+Version Control
+
+Date
+Author
+Version
+Change Description
+9th May 2025
+Red Apple Technologies
+1.0
+Creating API Document
+Disclaimer
+    1. API Overview
+The SlotsDiamond2 SW API is a unified backend solution that enables gaming platforms to seamlessly interact with multiple game providers through a single integration. It is divided into two key components: one focused on secure, real-time wallet transactions, and another dedicated to dynamic game data and content delivery, which refers to Seamless Wallet API and Data Integration API. Together, they provide a consistent and scalable interface for managing gameplay operations, financial transactions, and content synchronization across diverse provider systems.
+
+By abstracting provider-specific logic, the SlotsDiamond2 SW API simplifies integration and ensures a standardized experience regardless of the underlying game source. It supports a wide range of real-time operations, including player session handling, wallet synchronization, and retrieval of game metadata and configurations-all without requiring direct communication with each individual provider.
+
+Security is a core part of the platform, with protections such as hash-based request validation and IP whitelisting to ensure integrity and prevent unauthorized access. The API adheres to RESTful design principles, delivering stateless, JSON-based communication and clear HTTP status handling. Built for performance and reliability, the SlotsDiamond2 SW API empowers gaming platforms to scale efficiently while maintaining full control over financial flows and game content delivery.
+
+        1.1 Seamless Wallet API
+The Seamless Wallet API Service is a centralized API solution that manages all critical wallet transactions required during gameplay, including user authentication, balance verification, bet placement, win processing, refunds, bulk operations, and session settlement. It is designed to provide a smooth, secure, and real-time transactional experience, enabling consistent wallet behavior across various games and providers.
+
+API Name
+Description
+Status
+Authenticate
+Verifies the identity of the user and authorizes access to wallet operations.
+
+Balance
+Retrieves the current balance available in the user's wallet.
+
+BulkBet
+Processes multiple bet transactions in a single request for efficiency.
+
+BulkWin
+Processes multiple winnings transactions in a single request for efficiency.
+
+BulkRefund
+Handles multiple refund operations together to simplify batch rollbacks.
+
+
+Settlement
+Finalizes all pending transactions and reconciles the session’s financials.
+
+
+        1.2 Data Integration API
+The Data Integration API provides real-time access to dynamic game-related data, including game categories, provider information, game listings, popular and upcoming titles, player bet history, round details, credit limits, and available bet ranges. It enables platforms to keep their game catalogs updated, personalize user experiences, and maintain seamless synchronization with provider content.
+
+API Name
+Description
+Status
+GetCategories
+Retrieves a list of game categories available on the platform.
+
+GetProviders
+Returns information about all integrated game providers.
+
+GetGameList
+Fetches the complete list of games offered by all providers.
+
+MostPopularGames
+Provides a list of the most played or trending games.
+
+GetUpcomingGames
+Returns games scheduled for future release or availability.
+
+GetRoundDetails
+Retrieves detailed information about a specific game round.
+
+BetHistory
+Provides a history of bets placed by a user across games.
+
+GetGameURL
+Generates a playable URL for launching a specific game session.
+
+GetCreditLimit
+Returns the credit limit assigned to a user, if applicable.
+
+
+
+
+
+—————————————————The Overview will continue—————————————————
+    2. Seamless Wallet API Services
+The Seamless Wallet API supports a full range of real-time wallet operations essential for gaming platforms, including secure player authentication, balance verification, bet deductions, win payouts, refunds, and session settlements. It also enables efficient handling of high-volume transactions through bulk operations, allowing multiple bets, wins, or refunds to be processed in a single request. This ensures consistent wallet behavior across games and providers while optimizing performance under load.
+
+Security is enforced through MD5-based request hashing, combined with IP whitelisting to restrict access to trusted sources. This approach safeguards data integrity and prevents unauthorized access, ensuring all wallet transactions are securely validated.
+
+Designed around RESTful principles, the Seamless Wallet API uses stateless communication, clean JSON responses, and standardized HTTP status codes to simplify integration and ensure consistency. Whether supporting single-game transactions or complex multi-provider ecosystems, it delivers the control, security, and scalability required for modern real-money gaming platforms.
+
+HTTP Method Used
+    • POST: Used for user authentication, retrieving balance, processing bets and wins, issuing refunds, handling bulk transactions (bet, win, refund), and finalizing game settlements.
+
+Request Headers
+Most APIs in this service require the following headers:
+
+http
+
+Content-Type: application/json
+
+    • Content-Type: Specifies that the request body is in JSON format.
+
+Response Headers
+All responses will include:
+
+http
+Content-Type: application/json
+    • Content-Type: Ensures the response format remains consistent.
+Security Measures
+    • MD5-based Hashing: Ensures secure access to protected endpoints.
+    • SECRET_KEY: Merchant will provide the value of secret key at the time of Onboarding.
+
+Hash code is calculated with following formula:
+From request post parameters, all parameters are taken (except hash) and appending to string:
+
+    1. Sort all parameters by keys in alphabetical order.
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+    4. Calculate the hash by using MD5.
+    5. Compare with hash parameter. In the case of failure, Operator should send the error code 1013.
+Example:
+
+    1. Sort all expected parameters by keys in alphabetical order.
+
+ini
+bet_amount=199 category_id=66b5be786a68c2e9bbb5296e game_id=66b5f86fe5c3936dcce51073 round_id=157887124 txn_id=1001578870000007943180
+user_id=f7ed416e
+
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+
+ini
+bet_amount=199&category_id=66b5be786a68c2e9bbb5296e&game_id=66b5f86fe5c3936dcce51073 &round_id=157887124&txn_id=1001578870000007943180&user_id=f7ed416e
+
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+
+ini
+bet_amount=199&category_id=66b5be786a68c2e9bbb5296e&game_id=66b5f86fe5c3936dcce51073 &round_id=157887124&txn_id=1001578870000007943180&user_id=f7ed416eSECRET_KEY
+
+    4. Calculate MD5 hash of the entire string.
+
+ini
+MD5(bet_amount=199&category_id=66b5be786a68c2e9bbb5296e&game_id=66b5f86fe5c3936dcce5 1073&round_id=157887124&txn_id=1001578870000007943180&user_id=f7ed416eSECRET_KEY)
+
+You'll get a 32-character hash (e.g. 0aa56fb3e00894da9e3bbff34d9e14c3). Now, the hash has been generated and added to the request body. The example request body is as followed:
+
+json
+{
+"user_id": "f7ed416e",
+"game_id": "66b5f86fe5c3936dcce51073", "category_id": "66b5be786a68c2e9bbb5296e", "round_id": "157887124",
+"txn_id": "1001578870000007943180",
+"bet_amount": "199",
+"hash": "0aa56fb3e00894da9e3bbff34d9e14c3"
+}
+
+    5. Validate the request by comparing the received hash with the generated hash.
+
+
+NOTE: The {{operator_endpoint}} is the primary interface through which merchant initiate real-time wallet operations with operators. Operators must provide this endpoint during onboarding to enable smooth integration and ensure consistent, low-latency processing of transactions across gaming sessions.
+
+        2.1. Authenticate
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=authenticate
+Description:
+The Authenticate API is used to verify a player's identity before granting access to the gaming platform. The request includes the player's unique identifier and a verification hash generated by the merchant. Upon receiving the request, the operator is expected to validate the provided information and return an appropriate response. This serves as the initial step in establishing a secure and authenticated gaming session.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+user_id
+string
+Unique identifier of the player.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+Example Request:
+
+json
+{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}
+
+Response
+Returns the player's current wallet balance, currency, country and jurisdiction.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+amount
+Float
+user's real balance
+Yes
+country
+String
+Country of the player. 2-letter Country code, ISO 3166-1 alpha-2.
+Optional
+jurisdiction
+String
+Jurisdiction of the player.
+Optional
+Example Response:
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"currency": "KRW", "amount": 1045784.47, "country": "UK", "jurisdiction": "GB"
+}
+}
+Example Response (Failure - Invalid User):
+
+json
+{
+"code": 2001,
+"message": "INVALID_USER",
+
+
+
+
+
+
+
+
+bash
+curl --location '{{operator_endpoint}}/callback?function=authenticate' \
+--header 'Content-Type: application/json' \
+--data '{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}'
+
+
+
+
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+
+
+        2.2. Balance
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=balance
+Description:
+The Balance API is used to retrieve the current wallet balance of a player. The request includes the player’s unique identifier and a verification hash generated by the merchant. Upon receiving the request, the operator should respond with the available balance and currency information for the specified player.
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+user_id
+string
+Unique identifier of the player.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+Example Request:
+
+json
+{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}
+
+
+Response
+Returns the player's current wallet balance and associated currency.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+amount
+Float
+user's real balance
+Yes
+Example Response:
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"currency": "KRW", "amount": 1045784.47
+}
+}
+Example Response (Failure - Invalid User):
+
+json
+{
+"code": 2001,
+"message": "INVALID_USER", "data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{operator_endpoint}}/callback?function=balance' \
+-H "Content-Type: application/json" \
+-d '{
+"user_id": "7e4ae709",
+"hash": "b602d31bc155074476db8d30b177c1d4"
+}'
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+
+
+        2.3. Bulk Bet
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=bulkbet
+
+
+Description:
+The Bulk Bet API is used by the merchant to place multiple bets in a single request. The request includes player and game identifiers, a total bet amount, and an array of individual transactions-each containing a unique txn_id, bet_amount, and round_id.
+All transactions are processed as a single atomic operation. If any individual bet fails validation (e.g. due to an invalid amount, round ID, or duplicate transaction), the entire bulk bet must be rejected. In such cases, the player's balance must remain unchanged, and the operator should return a failure response.
+Each txn_id must be globally unique. Before deducting the player’s quota, the operator must ensure that none of the transaction IDs in the request have been previously processed to prevent duplicate deductions.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+
+user_id
+String
+Unique identifier of the player.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the game provider
+Yes
+provider_name
+Object
+Provider name in different languages
+Yes
+total_amount
+Float
+Amount being wagered by the player.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+transactions
+Json array
+See Below
+Yes
+amount
+Float
+Amount for the individual bet.
+Yes
+txn_id
+String
+Unique transaction ID for this specific bet.
+Yes
+round_id
+String
+Identifier for the game round.
+Yes
+Example Request:
+
+json
+
+{
+"request_id":"184",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar",
+
+
+
+
+
+Response
+Returns the updated player balance, currency, and a list of processed transactions. Each entry in the transactions array includes the original txn_id from the request and a corresponding operator_transaction_id generated by the operator for reference and tracking.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+transactions
+Json array
+See Below
+Yes
+operator_transaction_id
+String
+Operator generated transaction ID for reference.
+
+txn_id
+String
+txn_id from the request
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"available_balance": 293271.222, "currency": "KRW", "transactions": [
+{
+"operator_transaction_id": "6887370e582d2eb37a3a3422", "txn_id": "676a86cb41762fc4a8a42a52"
+}
+]
+}
+}
+Example Response (Failure - Insufficient Balance):
+
+json
+{
+"code": 2002,
+"message": "BALANCE_EXCEED",
+"data": { }
+}
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": { }
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=bulkbet" \
+-H "Content-Type: application/json" \
+-d '{
+"request_id":"184",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7",
+
+
+
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2002
+BALANCE_EXCEED
+2003
+ALREADY_PROCESSED
+
+2004
+INVALID_TRANSACTION
+
+
+
+
+        2.4. Bulk Win
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=bulkwin
+
+
+Description:
+The Bulk win API used to credit multiple winnings for a player in a single request. The request includes the player's details, the total win amount, and a list of individual transactions.
+The txn_id must be unique for each transaction, ensuring that no transaction is processed more than once. However, the round_id can be the same across multiple transactions, as they may correspond to different bet instances in the same game round.
+The operator is responsible for validating that none of the provided txn_ids have been processed before. If any transaction in the request fails (due to a duplicate txn_id, invalid data, or any other issue), the entire request should fail, and no winnings should be credited. The operator should only credit the net win amount if all transactions are successfully validated.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+user_id
+String
+Unique identifier of the player.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the game provider
+Yes
+provider_name
+Object
+Provider name in different languages
+Yes
+total_amount
+Float
+Total win amount to be credited for all transactions in the batch.
+Yes
+overwin_amount
+Float
+Amount that exceeded the profit set by operator.
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+transactions
+Json array
+See Below
+Yes
+amount
+Float
+Win Amount for the individual transaction.
+Yes
+txn_id
+String
+Unique transaction ID for this specific win.
+Yes
+round_id
+String
+Identifier for the game round in which the win occurred. Multiple transactions can share the same round_id.
+Yes
+
+
+
+
+
+Example Request:
+
+json
+
+{
+"request_id":"185",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c",
+
+
+
+
+
+
+Response
+
+© 2025 SLOTSDIAMOND2
+23
+Returns the updated player balance, currency, and a list of processed transactions. Each entry in the transactions array includes the original txn_id from the request and a corresponding operator_transaction_id generated by the operator for reference and tracking.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+transactions
+Json array
+See Below
+Yes
+operator_transaction_id
+String
+Operator generated transaction ID for reference.
+
+txn_id
+String
+txn_id from the request
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+"available_balance": 1045884.47, "currency": "KRW", "transactions": [
+{
+"operator_transaction_id":"681ddf2e2ab0d881eb661b49", "txn_id": "16053053900005407381781"
+},
+{
+"operator_transaction_id":"921def2e27b0d881e3661b4w", "txn_id": "14053053900005407381791"
+
+}
+]
+}
+}
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": { }
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=bulkwin" \
+-H "Content-Type: application/json" \
+-d '{
+"request_id":"185",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7", "category_name":{
+"en": "Lobby",
+"ja": "ロビー",
+"kor": "로비",
+
+
+
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2003
+ALREADY_PROCESSED
+2004
+INVALID_TRANSACTION
+        2.5. Bulk Refund
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=bulkrefund
+Description:
+The Bulk Refund API is used to request refunds for multiple previously placed bets in a single operation. The request contains the player's unique identifier, a verification hash, and an array of txn_ids that represent the transactions to be refunded.
+The operator must validate that each transaction ID corresponds to a valid and refundable bet. All refunds in the request are processed as a single atomic operation-if any one of the transactions is invalid or not eligible for a refund, the entire request must be rejected, and no changes should be made to the player’s balance. The operator should also ensure that none of the txn_ids have already been refunded.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+user_id
+String
+Unique identifier of the player.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the game provider
+Yes
+
+provider_name
+Object
+Provider name in different languages
+Yes
+hash
+String
+Verification hash generated by the merchant to validate the request payload.
+Yes
+transactions
+Array
+Array of transaction IDs to be refunded.
+Yes
+Example Request:
+
+json
+
+{
+"request_id":"186",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7", "category_name":{
+"en": "Lobby",
+"ja": "ロビー",
+"kor": "로비",
+"thai": "ล็อบบี้",
+"vi": "Sảnh đợi"
+},
+"provider_id":"67c98371bc9aae6e527ba835", "provider_name":{
+"en": "WM Casino",
+"ja": "WM Casino",
+"kor": "WM카지노",
+"thai": "WM Casino",
+"vi": "WM Casino"
+}
+},
+
+
+
+
+Response
+Returns the updated player balance and a list of successfully refunded transactions, each with the original txn_id and a unique operator_transaction_id for reference.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+transactions
+Json array
+See Below
+Yes
+operator_transaction_id
+String
+Operator generated transaction ID for reference.
+
+txn_id
+String
+txn_id from the request
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", "data": {
+
+
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": { }
+}
+Example Response (Failure - Invalid Transaction Id):
+
+json
+{
+"code": 2004,
+"message": "INVALID_TRANSACTION",
+"data": { }
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=bulkrefund" \
+-H "Content-Type: application/json" \
+
+-d '{
+"request_id":"186",
+"user_id": "0412f631", "games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7", "category_name":{
+"en": "Lobby",
+"ja": "ロビー",
+"kor": "로비",
+"thai": "ล็อบบี้",
+"vi": "Sảnh đợi"
+},
+"provider_id":"67c98371bc9aae6e527ba835", "provider_name":{
+"en": "WM Casino",
+"ja": "WM Casino",
+"kor": "WM카지노",
+"thai": "WM Casino",
+"vi": "WM Casino"
+}
+},
+"hash":"ffba0057d4977f6d8b985951fbabd6dd", "transactions": [
+"676a86cb41762fc4a8a42a51"
+]
+}'
+
+
+
+
+
+
+© 2025 SLOTSDIAMOND2
+31
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2003
+ALREADY_PROCESSED
+2004
+INVALID_TRANSACTION
+
+
+        2.6. Settlement
+Endpoint:
+
+bash
+POST {{operator_endpoint}}/callback?function=settlement
+
+
+Description:
+The Settlement API is used to credit or debit a specific amount to/from a player’s wallet outside the regular betting flow. This may include operations such as rewards, bonuses, manual adjustments, or other provider-specific settlements.
+Each settlement request includes a unique txn_id, the amount to be adjusted, the txn_type (indicating the nature of the transaction debit/credit), and the provider_id responsible for the adjustment. The operator is expected to process the settlement, apply the amount accordingly, and return the updated balance along with a transaction reference.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+request_id
+String
+Unique identifier of the request.
+Yes
+
+user_id
+String
+Unique identifier of the player.
+Yes
+txn_type
+String
+Type of transaction (debit/credit).
+Yes
+transactions
+Json array
+See below
+yes
+txn_id
+String
+Unique transaction ID for this settlement operation.
+Yes
+amount
+Float
+Amount to be settled.
+Yes
+round_id
+String
+Unique identifier for the specific game round whose details are being requested.
+Yes
+games
+Object
+See below
+Yes
+game_id
+String
+Identifier of the game in which the bet is placed.
+Yes
+game_name
+Object
+Game name in different languages
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+category_id
+String
+Identifier for the game category.
+Yes
+category_name
+Object
+The display name of the category in different languages
+Yes
+provider_id
+String
+Identifier of the provider initiating the settlement.
+Yes
+provider_name
+Object
+Provider name in different languages
+Yes
+hash
+string
+Verification hash generated by the merchant to validate the request payload.
+Yes
+Example Request:
+
+json
+
+{
+"request_id":"188",
+"user_id": "0412f631", "txn_type": "credit", "transactions": [
+
+
+
+
+
+
+
+Response
+© 2025 SLOTSDIAMOND2
+34
+Returns the player's updated balance, the currency used, and the operator-generated transaction ID for reference.
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+available_balance
+Float
+user's available balance
+Yes
+currency
+String
+The ISO-4217 currency code of the user
+Yes
+operator_transac tion_id
+Json Array
+See below
+Yes
+operator_transac tion_id
+String
+Operator generated transaction ID for reference. (If not SUCCESS empty string )
+Yes
+txn_id
+String
+Unique transaction identifier
+Yes
+Example Response (Success):
+
+json
+
+{
+"code": 1000,
+"message": "SUCCESS", "data": {
+"available_balance": 359271.222, "currency": "KRW",
+"transactions": [
+{
+"operator_transaction_id": "6887373f582d2eb37a3a342a", "txn_id": "676a86cb41762fc4a8a42a51"
+}
+]
+}
+}
+Example Response (Failure - Duplicate Transaction):
+
+json
+{
+"code": 2003,
+"message": "ALREADY_PROCESSED",
+"data": {
+"available_balance": 1046284.47, "currency": "KRW", "operator_transaction_id": ""
+}
+}
+
+
+cURL Request
+bash
+curl --location "{{operator_endpoint}}/callback?function=settlement" \
+-H "Content-Type: application/json" \
+-d '{
+"request_id":"188",
+"user_id": "0412f631", "txn_type": "credit", "txn_data": [
+{
+"amount": "66000",
+"txn_id": "676a86cb41762fc4a8a42a51", "round_id": "7024283-58-107"
+}
+],
+"games":{
+"game_id":"6876275fd52e881ec07df32c", "game_name":{
+"en": "Andar Bahar",
+"kor": "안다르 바하르", "thai": "Andar Bahar", "vi": "Andar Bahar",
+"ja": "Andar Bahar"
+},
+"game_code":"128",
+"category_id":"672b45fb299594e25a4666e7",
+
+
+
+
+
+
+Response Codes
+
+Code
+Description
+1000
+SUCCESS
+2001
+INVALID_USER
+2003
+ALREADY_PROCESSED
+
+
+
+
+
+
+
+Error Codes for Seamless Wallet API
+This response code is to be sent by the operator:
+
+Code
+Message
+Description
+1000
+SUCCESS
+The request was processed successfully
+2001
+INVALID_USER
+The user_id sent in the request doesn’t exist.
+2002
+BALANCE_EXCEED
+The bet_amount sent in the request is greater than the user’s available balance.
+2003
+ALREADY_PROCESSED
+The txn_id sent in the request is already present.
+2004
+INVALID_TRANSACTION
+The txn_id sent in the request cannot be found.
+2005
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1004
+FATAL_ERROR
+Internal server error
+    3. Data Integration API Services
+The Data Integration API offers a comprehensive suite of real-time operations tailored to meet the evolving demands of gaming platforms. It facilitates seamless communication between systems through endpoints that deliver essential data such as provider lists, game categories, and the complete game catalog. The API also supports fetching the most popular and upcoming games, accessing user-specific bet histories, and retrieving detailed round information for transparency and compliance. A key feature includes the ability to generate secure, session-specific game launch URLs. This enables operators to offer a streamlined gameplay experience, precise user activity tracking, and reliable integration with various third-party providers-all through a unified and consistent interface.
+To maintain high levels of security, the API implements MD5-based hashing for request validation and enforces IP whitelisting to ensure that only trusted sources can access its endpoints. This dual-layered protection guards against unauthorized access and ensures the integrity of every transaction.
+Adhering to RESTful architecture, the Data Integration API utilizes stateless communication, provides structured JSON responses, and follows standard HTTP status codes for clarity and consistency. Whether it's powering single game sessions or managing integrations across multiple providers, the API offers the reliability, security, and scalability essential for today’s gaming platforms.
+
+
+HTTP Method Used
+    • POST: Used to perform various operations such as retrieving the list of game providers, game categories, available games, upcoming games, and popular games. It is also utilized to generate a game launch URL for a specific game session. Additionally, POST requests enable fetching the bet history of a user within a specified time range, accessing detailed records of a particular game round, and retrieving the current credit balance of an account. These operations support dynamic, real-time data access essential for delivering a seamless and engaging gaming experience.
+
+Request Headers
+Most APIs in this service require the following headers:
+
+http
+
+Content-Type: application/json
+
+    • Content-Type: Specifies that the request body is in JSON format.
+Response Headers
+All responses will include:
+
+http
+Content-Type: application/json
+    • Content-Type: Ensures the response format remains consistent.
+
+Security Measures
+    • MD5-based Hashing: Ensures secure access to protected endpoints.
+    • SECRET_KEY: Merchant will provide the value of secret key at the time of Onboarding.
+
+Hash code is calculated with following formula:
+
+    1. Sort all parameters by keys in alphabetical order.
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+    4. Calculate the hash by using MD5.
+Example:
+
+    1. Sort all expected parameters by keys in alphabetical order.
+
+ini
+"account_id":"66b4a0a159098a5df1280c9a", "language":"en",
+“request_id” :”777”
+
+    2. Append them (if the value is not null or empty) in key1=value1&key2=value2.
+
+ini
+account_id=66b4a0a159098a5df1280c9a&language=en&request_id=777
+
+    3. Append secret_key, e.g.: key1=value1&key2=value2SECRET_KEY.
+
+ini
+account_id=66b4a0a159098a5df1280c9a&language=en&request_id=777SECRET_KEY
+
+
+    4. Calculate MD5 hash of the entire string.
+
+ini
+MD5(account_id=66b4a0a159098a5df1280c9a&language=en&request_id=777SECRET_KEY)
+
+You'll get a 32-character hash (e.g. 0aa56fb3e00894da9e3bbff34d9e14c3). Now, the hash has been generated, add it to the request body. The example request body is now as followed:
+
+json
+{
+"language":"en", "account_id":"66b4a0a159098a5df1280c9a", “request_id” : “777”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}
+
+
+Note: The {{merchant_endpoint}} is the callback interface through which operators receive real-time game-related data from the merchant. This endpoint will be provided by the merchant during onboarding, facilitating seamless synchronization of game catalogs and provider content via the Data Integration API.
+
+
+        3.1. Get Providers List API
+Endpoint:
+
+bash
+
+
+
+Description:
+The get-providers API is used to get the list of providers available to the operator. It takes language, account_id and hash in the request body.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+The request_id is unique for each request
+Yes
+hash
+String
+Generated hash code.
+Yes
+The request for this API contains the following keys:
+
+Example Request:
+
+json
+{
+"language":"en", "account_id":"66b4a0a159098a5df1280c9a", “request_id” : “777”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+providers
+Json array
+See below
+Yes
+provider_id
+String
+Unique identifier for the game provider .
+Yes
+provider_name
+String
+The display name of the provider.
+Yes
+logo
+Object
+Contains URLs to the provider's logos for different theme modes. See below
+Yes
+light_logo
+String
+URL of the logo optimized for light-themed UIs.
+Yes
+dark_logo
+String
+URL of the logo optimized for dark-themed UIs
+Yes
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id” :”777”, "data": {
+"providers": [
+{
+"provider_id": "66b5cd004f0a29dbb66a3a89", "provider_name": "Pragmatic Play",
+"logo": { "light_logo":
+"https://plexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com/provider/pp/PP_white.png",
+
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “777”,
+"data": {}
+}
+
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-providers' \
+
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+        3.2. Get Category List API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-categories
+Description:
+The GetCategories API is used to get the list of all categories. The request must include a account_id , language and hash.
+
+
+Request
+The request for this API contains the following keys:
+
+
+Request Key
+Data Type
+Description
+Required
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+The request_id is unique for each request
+Yes
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"language":"en", "account_id":"xxxxxxxxxxxxxxxxxxx", “request_id” : “778”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+categories
+Json array
+See below
+Yes
+category_id
+String
+Unique identifier for the category.
+Yes
+category_name
+String
+The display name of the provider
+Yes
+category_icon
+Object
+Contains URLs to the provider's logos for different theme modes. See below
+Yes
+
+
+
+
+
+Example Response (Success)
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id”:”778”, "data": {
+"categories": [
+{
+"category_id": "66b5be786a68c2e9bbb5296e", "category_name": "Slots",
+"category_icon": "category-icon.png"
+},
+{
+"category_id": "66bafd73f9c332055b1d5be7", "category_name": "Live Casino",
+
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “778”,
+"data": {}
+}
+
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-categories' \
+--header 'Content-Type: application/json' \
+--data '{ "language":"en",
+"account_id":"xxxxxxxxxxxxxxxxxxxxxxxxxxx", “request_id” : “778”, "hash":"d535adc10df8e6c5b0e82f4dee3cad62"
+}'
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.3. GameList API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-gamelist
+
+
+Description:
+The gameList API provides the list of games assigned to the account.
+
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+page
+String
+The page number for paginated results.
+No
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+language
+String
+"en" – English
+"kor" – Korean
+Yes
+
+
+
+"thai" – Thai "vi" – Vietnamese "ja" – Japanese
+
+request_id
+String
+The request_id is unique for each request
+Yes
+provider_id
+String
+Optional filter to fetch games only from a specific provider.
+No
+category_id
+String
+Optional filter for game category (e.g., Slots, Live Casino). Empty string ("") means no category filter applied.
+No
+search_key
+String
+Optional keyword to search games by name. Empty string means no search keyword used.
+No
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", "category_id": "",
+"language": "kor",
+"page": "0",
+"provider_id": "66b5f013e5c3936dcce50fec",
+“request_id” : “fa47a010-ec9a-494e-b3dd-dfca08b1e8c1”, "search_key": "",
+"hash": "b59825bc329c217df701348e5467d7ec"
+}
+
+
+
+
+
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+games
+Json array
+See below
+Yes
+game_id
+String
+Unique identifier for the game.
+Yes
+game_name
+String
+Name of the game.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+game_image
+String
+URL of the game's display image.
+Yes
+game_category
+String
+The category under which this game is classified.
+Yes
+game_provider
+String
+The name of the provider who offers this game.
+Yes
+release_date
+String
+Date when the game was or will be released.
+Yes
+total
+Number
+Total number of games available.
+Yes
+Response (Success)
+json
+
+{
+"code": 1000,
+"message": "SUCCESS",
+"request_id": "fa47a010-ec9a-494e-b3dd-dfca08b1e8c1", "data": {
+"games": [
+{
+"game_id": "68761076d52e881ec07d86ed", "game_name": "리틀 팜",
+"game_code": "315",
+"game_image": "https://…/315.png",
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “779”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-gamelist' \
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a", "category_id": "",
+"language": "kor",
+"page": "0",
+"provider_id": "66b5f013e5c3936dcce50fec",
+“request_id” : “fa47a010-ec9a-494e-b3dd-dfca08b1e8c1”, "search_key": "",
+"hash": "b59825bc329c217df701348e5467d7ec"
+}'
+
+
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+
+
+
+
+        3.4. Most popular games API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/most-popular-games
+
+
+Description:
+
+The /most-popular-games API retrieves the list of most popular games. Most popular games can be filtered with optional parameters i.e- provider_id, category_id, search_key
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+page
+String
+The page number for paginated results.
+No
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+provider_id
+String
+Optional filter to fetch games only from a specific provider.
+No
+category_id
+String
+Optional filter for game category (e.g., Slots, Live Casino). Empty string ("") means no category filter applied.
+No
+search_key
+String
+Optional keyword to search games by name. Empty string means no search keyword used.
+No
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+
+{
+"page":"0",
+"account_id":"66b4a0a159098a5df1280c9a",
+"hash":"0faef7a78bf77913afd83d78a53ecc7e", "language":"en",
+"provider_id":"66b5f013e5c3936dcce50fec", "category_id":"",
+
+
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+games
+Json array
+See below
+Yes
+game_id
+String
+Unique identifier for the game.
+Yes
+game_name
+String
+Name of the game.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+game_image
+String
+URL of the game's display image.
+Yes
+game_category
+String
+The category under which this game is classified.
+Yes
+game_provider
+String
+The name of the provider who offers this game.
+Yes
+release_date
+String
+Date when the game was or will be released.
+Yes
+total
+Number
+Total number of games available.
+Yes
+Response (Success)
+json
+
+{
+
+
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” :”780”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/most-popular-games' \
+--header 'Content-Type: application/json' \
+
+--data '{ "page": "0",
+"account_id": "66b4a0a159098a5df1280c9a",
+“request_id” :”fa47a010-ec9a-494e-b3dd-dfca08b1e7e1”, "language": "en",
+"provider_id": "66b5f013e5c3936dcce50fec", "category_id": "",
+"search_key": "",
+"hash": "0faef7a78bf77913afd83d78a53ecc7e"
+}'
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.5. Get upcoming games API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-upcoming-games
+Description:
+The /get-upcoming-games endpoint allows the operator to get the list of games which will be available for the player in near future.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+No
+provider_id
+String
+Unique identifier for the game provider.
+No
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", “request_id”:”fa47a010-ec9a-494e-b3dd-dfca08b1e7e8”, "language": "en",
+"provider_id": "67d13c2fefbb8bd736ebb361", "hash":"c85fe37dfad05902a88a2acfedb4d4d0"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+games
+Json array
+See below
+Yes
+game_id
+String
+Unique identifier for the game.
+Yes
+game_name
+String
+Name of the game.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+game_image
+String
+URL of the game's display image.
+Yes
+game_category
+String
+The category under which this game is classified.
+Yes
+game_provider
+String
+The name of the provider who offers this game.
+Yes
+release_date
+String
+Date when the game was or will be released.
+Yes
+
+
+Response
+
+json
+
+{
+"code": 1000,
+"message": "SUCCESS",
+"request_id": "fa47a010-ec9a-494e-b3dd-dfca08b1e7e8", "data": {
+"games": [
+{
+"game_id": "67d2bf9e8f8ac4e0c8de62f5",
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id”:’781”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant_endpoint}/get-upcoming-games' \
+--header 'Content-Type: application/json' \
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1004
+CLIENT_DENIED
+Indicates the client's request was blocked due to insufficient permissions or access restrictions.
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.6. Game launch API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-game-url
+Description:
+Game launch API allows the operator to get the url to launch the game. This endpoint accepts a single game_id supplied by the merchant and returns the corresponding game launch.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+mode
+String
+Specifies the gameplay mode. "real" – Real money gameplay. "fun" – Demo or free play mode
+Yes
+user_id
+String
+Unique identifier of the player in the operator's system.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+username
+String
+The display name of the user, often shown within the game interface.
+Yes
+currency
+String
+ISO 4217 currency code to define the player's operating currency.
+Yes
+game_id
+String
+Unique identifier of the game to be launched, provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+return_url
+String
+Optional URL to which the user should be redirected after exiting the game.
+No
+hash
+String
+Generated hash code.
+Yes
+
+
+
+Headers:
+
+Header
+Type
+Description
+Required
+Content-Type
+application/json
+Request payload format
+Yes
+
+
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", "mode":"real",
+"user_id": "f7ed416e", "username":"john doe", "language":"en",
+"currency":"KRW", "Game_id":"675a80bd5badec1f966405e0", “request_id” : “782”,
+"return_url":"", "hash":"4943748121b4c8fc7d1a8d889616494d"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+url
+String
+Fully constructed game launch URL.
+Yes
+Example Response (Success):
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id”:”782”, "data": {
+"url": "https://sslaunch.plxmed.com/launch?branding=true&brand_theme=light&brand_image_light=https
+%3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storag e%2F1731570308851-1731570308747-plex_brand_light_theme_logo.png&brand_image_dark=https% 3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storage
+%2F1731503178496-1731503178170-plex_brand_dark_theme_logo.png&url=https%3A%2F%2Fblacks tone-hk1.prerelease-env.biz%2Fgs2c%2FplayGame.do%3Fkey%3Dtoken%253D675a80bd5badec1f966 405e0-ucd-66b9eec2facd20a39b5dc732%2560%257C%2560symbol%253Dvswaysbewaretd%2560%25 7C%2560language%253Den%2560%257C%2560currency%253DKRW%26ppkv%3D2%26stylename%3 Dblst_plexmediasm%26isGameUrlApiCalled%3Dtrue%26userId%3D66b9eec2facd20a39b5dc732"
+}
+}
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id”:”782”,
+"data": {}
+}
+
+
+Example Response(Error):
+
+json
+
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id”:”782”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant-endpoint}}/get-game-url' \
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a", "mode":"real",
+"user_id": "f7ed416e", "username":"john doe", "language":"en",
+"currency":"KRW", "game_id":"675a80bd5badec1f966405e0", “request_id”:”782”,
+"return_url":"", "hash":"4943748121b4c8fc7d1a8d889616494d"
+}'
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1008
+GAME_NOT_FOUND
+The requested game could not be located.
+1012
+NO_RECORD_FOUND
+Data not found.
+
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+        3.7. Round details API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/get-round-details
+
+
+Description:
+The Round Details endpoint provides a URL containing the final outcome of a specified game round.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+provider_id
+String
+Unique identifier for the game provider
+Yes
+round_id
+String
+Unique identifier for the specific game round whose details are being requested.
+Yes
+player_id
+String
+Unique identifier of the player in the operator's system.
+Yes
+game_id
+String
+Unique identifier of the game to be launched, provided by the merchant.
+Yes
+
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+hash
+String
+Generated hash code.
+Yes
+
+
+
+
+
+
+
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", "provider_id": "66b5cd004f0a29dbb66a3a89", "round_id":"1234567890", "player_id":"12avca34d", "game_id":"675a80bd5badec1f966405e0", “request_id” : “783”, "hash":"1367086e43b21cf4f5f0cd857d30a4f1"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+url
+String
+The url field contains a link that displays the final result of the requested game round.
+Yes
+Example Response:
+
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id” : “783”, "data": {
+"url": "https://sslaunch.plxmed.com/round/?branding=true&brand_theme=light&brand_image_light=https
+%3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storag e%2F1731570308851-1731570308747-plex_brand_light_theme_logo.png&brand_image_dark=https% 3A%2F%2Fplexmedia-sm-asset-storage.s3.ap-east-1.amazonaws.com%2Fplexmedia-sm-asset-storage
+%2F1731503178496-1731503178170-plex_brand_dark_theme_logo.png&provider_name=Pragmatic
+%20Play&url=%257B%2522type%2522%253A%2522url%2522%252C%2522data%2522%253A%2522ht
+tps%253A%252F%252Fblackstone-hk1.prerelease-env.biz%252Fgs2c%252FparentRoundHistoryDetails
+.do%253FplaySessionId%253D742445620000%2526stylename%253Dblst_plexmediasm%2526hash%2 53Db6d32d4c6aea38f933934ee0738f864e%2522%257D"
+}
+}
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “783”,
+"data": {}
+}
+
+
+
+cURL Request
+bash
+curl --location '{{merchant-endpoint}}/get-round-details' \
+
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a", "provider_id": "66b5cd004f0a29dbb66a3a89", "round_id":"742445620000", "player_id":"f7ed416e", "game_id":"675a80bd5badec1f966405e0", “request_id” : “783”, "hash":"1367086e43b21cf4f5f0cd857d30a4f1"
+}'
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1008
+GAME_NOT_FOUND
+The requested game could not be located.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1019
+INVALID_ROUND_ID
+The round ID is incorrect or does not exist.
+1020
+INVALID_PROVIDER
+The provided ID is incorrect, missing, or no longer valid.
+1021
+INVALID_PLAYER_ID
+The specified player could not be located or does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+        3.8. Bet history API
+Endpoint:
+
+bash
+POST {{merchant_endpoint}}/bet-history
+
+
+Description:
+This API is designed to fetch the complete bet history for a specific user over a defined period. It allows operators or merchants to track and audit a user's betting activity by providing detailed records of each transaction—such as bets placed, game details, outcomes, amounts wagered or won, and timestamps—within the requested time frame.
+
+
+
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+player_id
+String
+Unique identifier of the player in the operator's system.
+Yes
+language
+String
+"en" – English "kor" – Korean "thai" – Thai "vi" – Vietnamese "ja" – Japanese
+Yes
+username
+String
+The display name of the user, often shown within the game interface.
+Yes
+start_date_time
+String
+
+The beginning timestamp of the desired date range for bet history. (format: YYYY-MM-DD HH:mm:ss)
+Yes
+
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+page
+String
+
+Indicates the page number for paginated results. Useful when the history spans many records.
+No
+hash
+String
+Generated hash code.
+Yes
+
+
+
+
+
+
+
+Example Request:
+
+json
+
+{
+"request_id":"fa47a010-ec9a-494e-b3dd-dfca08b1e7c3", "account_id":"66b4a0a159098a5df1280c9a",
+"player_id": "f7ed416e",
+"start_date_time" : "2024-08-12 00:00:00",
+"end_date_time" : "2025-07-16 23:59:59",
+"hash":"cad3d235e1c4bfb8f7a1a1c44abd7dfd", "language": "en",
+"page": ""
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Numbe r
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+transactions
+Json array
+See below
+Yes
+transaction_id
+String
+A unique identifier for the transaction.
+Yes
+round_id
+String
+The unique identifier for the game round that this transaction is related to.
+Yes
+user_id
+String
+Unique identifier for the user in the merchant’s system.
+Yes
+external_user_id
+String
+The user’s identifier in the operator’s system.
+Yes
+username
+String
+The username of the player who made the transaction.
+Yes
+provider_id
+String
+The unique identifier for the game provider that hosted the game.
+Yes
+provider_name
+String
+The name of the game provider.
+Yes
+game_id
+String
+The unique identifier for the game played during the transaction.
+Yes
+game_name
+String
+The name of the game that was played.
+Yes
+game_code
+String
+The code of the game that was played.
+Yes
+transaction_amo unt
+String
+
+The amount involved in the transaction (in the specified currency).
+Yes
+transaction_type
+String
+
+The type of transaction, e.g., "credit", "debit".
+Yes
+transaction_purp ose
+String
+
+The reason for the transaction, e.g., "rollback", "win", "bet".
+Yes
+
+available_balance
+String
+
+The available balance in the user’s account after the transaction.
+Yes
+game_image
+String
+
+URL to the image associated with the game, typically a logo or thumbnail.
+Yes
+category_id
+String
+
+Unique identifier for the game category, like "Slots", "Live Casino", etc.
+Yes
+category_name
+string
+
+The name of the category in which the game falls.
+Yes
+transaction_date
+_time
+string
+
+The date and time when the transaction occurred.
+Yes
+
+
+
+
+
+Example Response:
+
+json
+
+{
+"code": 1000,
+"message": "SUCCESS",
+"request_id": "fa47a010-ec9a-494e-b3dd-dfca08b1e7c3", "data": {
+"transactions": [
+{
+"transaction_id": "6877ab3409844010c4036950", "round_id": "1852bedff486beab2dbc11b8",
+"user_id": "66b9eec2facd20a39b5dc732", "external_user_id": "f7ed416e",
+"username": "akash_krw",
+"provider_id": "678f9d2c30d095ac63ec1d23", "provider_name": "NetEnt",
+
+
+
+
+Example Response(Error):
+
+json
+{
+"code": 1015,
+"message": "CLIENT_NOT_FOUND", “request_id” : “784”,
+"data": {}
+}
+
+
+cURL Request
+bash
+curl --location '{{merchant-endpoint}}/bet-history' \
+--header 'Content-Type: application/json' \
+--data '{
+"account_id": "66b4a0a159098a5df1280c9a",
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1021
+INVALID_PLAYER_ID
+The specified player could not be located or does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+
+        3.9. Get Credit Limit API
+Endpoint:
+
+bash
+
+
+
+Description:
+The endpoint is used to retrieve the current currency balance associated with a specific account.
+
+
+Request
+The request for this API contains the following keys:
+
+Request Key
+Data Type
+Description
+Required
+account_id
+String
+The Account ID provided by the merchant.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+hash
+String
+Generated hash code.
+Yes
+Example Request:
+
+json
+{
+"account_id": "66b4a0a159098a5df1280c9a", “request_id”:”785”, "hash":"c76788fe936b5dd71ac67721a7c1c617"
+}
+
+
+Response
+
+Response Key
+Data Type
+Description
+Required
+code
+Number
+Status code indicating the result of the API call.
+Yes
+message
+String
+Message corresponding to the status code.
+Yes
+request_id
+String
+This request_id was sent at the time of making the request.
+Yes
+data
+Object
+Contains the actual response payload.
+Yes
+currency
+String
+The currency code used in the account.
+Yes
+credit_limit
+String
+Representation of the available credit limit.
+Yes
+threshold
+String
+A predefined minimum balance limit.
+Yes
+limit_exceeded
+boolean
+Boolean indicating whether the credit limit threshold has been exceeded.
+Yes
+
+
+Example Response (Success):
+
+json
+{
+"code": 1000, "message": "SUCCESS", “request_id”:”785”, "data": {
+"currency": "KRW",
+"credit_limit": "5,124.44",
+"threshold": "100.00", "limit_exceeded": false
+}
+}
+
+
+cURL Request
+bash
+
+
+
+
+
+
+Response Codes
+
+Code
+Message
+Description
+1000
+SUCCESS
+Request successful.
+1001
+INVALID_PARAMS
+Invalid or missing parameter(s).
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1023
+REQUEST_ALREADY_PROCESSED
+This request was sent using the same request_id
+
+
+
+
+
+
+Error Codes for Data Integration API
+This response code is to be sent by the merchant:
+
+Code
+Message
+Description
+1000
+SUCCESS
+The request was processed successfully
+
+1001
+INVALID_PARAMS
+The request body consists disallowed key or value
+1002
+INVALID_ACCOUNT
+The account_id provided in request body is not valid
+1003
+MAINTENANCE_MODE_ON
+The client account is in maintenance mode
+1004
+CLIENT_DENIED
+Indicates the client's request was blocked due to insufficient permissions or access restrictions.
+1005
+ACCOUNT_DENIED
+The user is not allowed to play that game as the client account is not linked with any account of the provider or the provider account is INACTIVE.
+1006
+GAME_DENIED
+The user is not allowed to play that game as the client account is not linked with the game.
+1007
+FATAL_ERROR
+Internal Server Error: An unexpected error occurred.
+1008
+GAME_NOT_FOUND
+The requested game could not be located.
+1009
+INVALID_CURRENCY
+The currency provided by the user is not supported by the provider
+1010
+CATEGORY_MISMATCH
+The category of the game is not supported by the associated provider account.
+1011
+UNSUPPORTED_CURRENCY
+The currency provided by the user is not supported by the client account he is associated with.
+1012
+NO_RECORD_FOUND
+Data not found.
+1013
+INVALID_HASH
+The hash sent in the request doesn’t match.
+1015
+CLIENT_NOT_FOUND
+Client does not exist.
+1016
+INVALID_CATEGORY
+The category_id provided is invalid.
+1017
+IP_FORBIDDEN
+caller IP not in whitelist.
+1018
+TOO_MANY_REQUESTS
+Too many incoming request.
+1019
+INVALID_ROUND_ID
+The round ID is incorrect or does not exist.
+
+1020
+INVALID_PROVIDER
+The provided ID is incorrect, missing, or no longer valid.
+1021
+INVALID_PLAYER_ID
+The specified player could not be located or does not exist.
+1022
+RESOURCE_NOT_FOUND
+The requested URL is not found on the server.
+1023
+REQUEST_ALREADY_PROCES SED
+This request was sent using the same request_id
+
+
